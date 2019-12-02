@@ -11,13 +11,8 @@ defmodule Day1Part2 do
 
   def calculate_fuel(mass) do
     fuel_mass = Integer.floor_div(mass, 3) - 2
-    fuel_mass + calculate_fuel_fuel(fuel_mass)
-  end
-
-  def calculate_fuel_fuel(mass) do
-    fuel_mass = Integer.floor_div(mass, 3) - 2
     if(fuel_mass > 0) do
-      fuel_mass + calculate_fuel_fuel(fuel_mass)
+      fuel_mass + calculate_fuel(fuel_mass)
     else
       0
     end
