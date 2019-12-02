@@ -1,9 +1,7 @@
 defmodule Day1 do
 
   def day1() do
-    File.stream!("./day1.txt")
-    |> Enum.map(&String.trim(&1))
-    |> Enum.map(&String.to_integer(&1))
+    FileUtil.read_file_to_int_array("./day1.txt")
     |> calculate_fuel()
   end
 
