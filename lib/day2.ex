@@ -1,10 +1,16 @@
 defmodule Day2 do
+
+  def day2_part1() do
+    initial_program = FileUtil.read_csv_file_to_int_array("day2.txt")
+    altered_program = List.replace_at(initial_program, 1, 12) |> List.replace_at(2, 2)
+    execute(altered_program)
+  end
   def execute(program) do
-    execute_lines(program, program)
+    execute_lines(program, 0)
   end
 
-  def execute_lines(memory, remaining_statements) do
-    statement = Enum.take(remaining_statements, 4) |> IO.inspect(label: "Executing")
+  def execute_lines(memory, program_counter) do
+    statement = Enum.slice(memory, program_counter, 4) |> IO.inspect(label: "Executing")
     operation = Enum.at(statement, 0)
 
     new_memory =
@@ -21,16 +27,17 @@ defmodule Day2 do
           load_address = Enum.at(statement, 3)
           List.replace_at(memory, load_address, first_operand * second_operand)
         
-        99 -> memory
+        99 -> 
+           IO.inspect(program_counter, label: "Program counter at")
+           memory |> IO.inspect(limit: :infinity)
 
-        _ ->
+        catch_all ->
+          IO.inspect(catch_all, label: "OpCode on raise:")
+          IO.inspect(program_counter, label: "Program counter on raise")
           raise("this shouldnt have happened")
       end
-
-    if(length(remaining_statements) >= 4) do
-      {_, new_remaining_statements} = Enum.split(remaining_statements, 4)
-      IO.inspect(new_memory)
-      execute_lines(new_memory, new_remaining_statements)
+    if(length(memory) >= program_counter + 4 and Enum.at(memory, program_counter) != 99) do
+      execute_lines(new_memory, program_counter + 4)
     else
       new_memory
     end
