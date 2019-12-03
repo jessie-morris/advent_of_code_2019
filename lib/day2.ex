@@ -6,8 +6,8 @@ defmodule Day2 do
       Enum.map(0..99, fn noun ->
         Enum.map(0..99, fn verb ->
           altered_program = List.replace_at(initial_program, 1, noun) |> List.replace_at(2, verb)
-          %{
-            Enum.at(execute(altered_program), 0) =>
+          {
+            Enum.at(execute(altered_program), 0),
               Integer.to_string(noun) <> ":" <> Integer.to_string(verb)
           }
         end)
