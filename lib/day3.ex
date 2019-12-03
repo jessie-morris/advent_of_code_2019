@@ -1,20 +1,17 @@
 defmodule Day3 do
   def execute() do
     [path1, path2] = FileUtil.read_file_into_lines("day3.txt")
-    trimmed_path1 = Enum.map(path1, fn s -> String.trim(s) end)
-    trimmed_path2 = Enum.map(path2, fn s -> String.trim(s) end)
-    calculate_distance(trimmed_path1, trimmed_path2)
+    calculate_distance(path1, path2)
   end
   def calculate_distance(path1, path2) do
     FileUtil.read_file_into_lines("day3.txt")
-    path1_points = get_points(path1)|> IO.inspect() |> MapSet.new() 
-    path2_points = get_points(path2)|> IO.inspect() |> MapSet.new()
+    path1_points = get_points(path1) |> MapSet.new() 
+    path2_points = get_points(path2) |> MapSet.new()
 
-    shared_points = MapSet.intersection(path1_points, path2_points) |> IO.inspect
+    shared_points = MapSet.intersection(path1_points, path2_points)
 
     Enum.map(shared_points, fn point -> manhattan_distance(point, {0,0}) end)
     |> Enum.reject(fn x -> x == 0 end)
-    |> IO.inspect(label: "pre min")
     |> Enum.min()
   end
 
@@ -39,6 +36,6 @@ defmodule Day3 do
     {x1, y1} = point1
     {x2, y2} = point2
 
-    abs(x1 - x2) + abs(y1 - y2) |> IO.inspect(label: "distance")
+    abs(x1 - x2) + abs(y1 - y2)
   end
 end
