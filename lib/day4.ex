@@ -1,7 +1,11 @@
 defmodule Day4 do
   def has_duplicate?(password) do
-    String.length(password) != Enum.count((Enum.dedup(String.graphemes(password))))
+    String.length(password) !=
+      String.graphemes(password)
+      |> Enum.dedup()
+      |> Enum.count()
   end
 
-  def 
+  def ascending_digits?(password) do
+  end
 end
