@@ -17,13 +17,9 @@ defmodule Day3 do
     {distance1, distance2} = 
     Enum.map(shared_points, fn point -> {distance_to_point(path1_points_and_distance, point), distance_to_point(path2_points_and_distance, point)} end)
     |> Enum.reject(fn x -> x == {0,0} end)
-    |> Enum.min_by(fn {a,b} -> a * b end)
+    |> Enum.min_by(fn {a,b} -> a + b end)
 
     distance1 + distance2
-
-    # Enum.map(shared_points, fn point -> manhattan_distance(point, {0,0}) end)
-    # |> Enum.reject(fn x -> x == 0 end)
-    # |> Enum.min()
   end
 
   def calculate_manhattan_distance(path1, path2) do
