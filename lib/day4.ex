@@ -1,5 +1,12 @@
 defmodule Day4 do
 
+  def execute() do
+    first = 178416
+    last = 676461
+    passwords_in_range_part_1(first, last)
+    passwords_in_range_part_2(first, last)
+  end
+  
   def passwords_in_range_part_1(first, last) do
     Enum.reduce(first..last, 0, fn password_num, acc ->
       password_string = Integer.to_string(password_num)
