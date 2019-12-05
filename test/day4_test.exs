@@ -24,4 +24,18 @@ defmodule Day4Test do
       assert Day4.ascending_digits?("123245") == false
     end
   end
+
+  describe "duplicate_contained?/1" do
+    test "return false if only duplicate appears more than once in a string" do
+      assert Day4.duplicate_contained?("112341") == false
+    end
+
+    test "returns true if all duplicate pairs only appear once" do
+      assert Day4.duplicate_contained?("112233") == true
+    end
+
+    test "returns false if the only duplicate is a triplicate" do
+      assert Day4.duplicate_contained?("123444") == false
+    end
+  end
 end
