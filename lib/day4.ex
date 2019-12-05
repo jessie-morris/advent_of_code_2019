@@ -1,5 +1,17 @@
 defmodule Day4 do
-  def passwords_in_range(first, last) do
+
+  def passwords_in_range_part_1(first, last) do
+    Enum.reduce(first..last, 0, fn password_num, acc ->
+      password_string = Integer.to_string(password_num)
+      if(has_duplicate?(password_string) && ascending_digits?(password_string)) do
+        acc + 1
+      else
+        acc
+      end
+    end)
+  end
+
+  def passwords_in_range_part_2(first, last) do
     Enum.reduce(first..last, 0, fn password_num, acc ->
       password_string = Integer.to_string(password_num)
       if(has_duplicate?(password_string) && ascending_digits?(password_string) && duplicate_contained?(password_string)) do
