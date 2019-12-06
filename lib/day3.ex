@@ -79,4 +79,3 @@ defmodule Day3 do
     abs(x1 - x2) + abs(y1 - y2)
   end
 end
-

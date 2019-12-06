@@ -1,4 +1,3 @@
-
 defmodule Benchmark do
   def measure(function) do
     function
