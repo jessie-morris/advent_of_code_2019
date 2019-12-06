@@ -8,9 +8,13 @@ defmodule Day5 do
         2 -> :multiply
         3 -> :input
         4 -> :output
+        5 -> :jumpiftrue
+        6 -> :jumpiffalse
+        7 -> :lessthan
+        8 -> :equals
         99 -> :exit
       end
-      
+
     op_mode_1 = String.at(op_modes, String.length(op_modes) - 1) |> parse_op_mode()
 
     op_mode_2 =
@@ -43,18 +47,19 @@ defmodule Day5 do
     |> execute("1")
   end
 
+  def day5_part2() do
+    FileUtil.read_csv_file_to_str_array("day5.txt")
+    |> execute("5")
+  end 
+
   def execute(program, input) do
     execute_lines(program, 0, input)
   end
 
   def execute_lines(memory, program_counter, input) do
-    IO.inspect(program_counter, label: "starting execute lines at program counter")
-    IO.inspect(Enum.at(memory, 224), label: "current value in cell 224")
-    IO.inspect(Enum.at(memory, 84), label: "current value in cell 84")
-    IO.inspect(memory, label: "current_memory")
     opcode = Enum.at(memory, program_counter) |> IO.inspect() |> parse_opcode
     statement_length = get_statement_length(opcode.operation)
-    statement = Enum.slice(memory, program_counter, statement_length)
+    statement = Enum.slice(memory, program_counter, statement_length) |> IO.inspect()
 
     new_memory =
       case opcode.operation do
@@ -73,10 +78,6 @@ defmodule Day5 do
           load_address = Enum.at(statement, 3) |> String.to_integer()
           first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
           second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
-          IO.inspect(opcode.op_mode_1, label: "first opcode mode")
-          IO.inspect(opcode.op_mode_2, label: "second opcode mode")
-          IO.inspect(first_operand, label: "multiplying")
-          IO.inspect(second_operand, label: "multiplying")
 
           List.replace_at(
             memory,
@@ -89,9 +90,43 @@ defmodule Day5 do
           List.replace_at(memory, load_address, input)
 
         :output ->
-          load_address = Enum.at(statement, 1) |> String.to_integer()
-          IO.inspect(Enum.at(memory, load_address) |> String.to_integer(), label: "OUTPUT")
-          memory
+          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
+          if(opcode.op_mode_1 == :position) do
+            load_address = Enum.at(statement, 1) |> String.to_integer()
+            IO.inspect(Enum.at(memory, load_address) |> String.to_integer(), label: "OUTPUT")
+            memory
+          else
+            IO.inspect(first_operand, label: "OUTPUT")
+            memory
+          end
+          
+        :lessthan ->
+          load_address = Enum.at(statement, 3) |> String.to_integer()
+          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
+          second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
+
+          if(first_operand < second_operand) do
+            List.replace_at(memory, load_address, "1")
+          else
+            List.replace_at(memory, load_address, "0")
+          end
+
+        :equals ->
+          load_address = Enum.at(statement, 3) |> String.to_integer()
+          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
+          second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
+
+          if(first_operand == second_operand) do
+            IO.inspect("first op == second op")
+            List.replace_at(memory, load_address, "1")
+          else
+            IO.inspect("first op != second op")
+            IO.inspect("writing 0 to #{load_address}")
+            List.replace_at(memory, load_address, "0")
+          end
+        
+        :jumpiftrue -> memory
+        :jumpiffalse -> memory
 
         :exit ->
           IO.inspect(program_counter, label: "Exiting: Program counter at")
@@ -105,11 +140,41 @@ defmodule Day5 do
 
     if(
       length(memory) >= program_counter + statement_length and
-        Enum.at(memory, program_counter) != "99"
+        Enum.at(memory, program_counter) != "99" and
+        opcode.operation != :jumpiftrue and
+        opcode.operation != :jumpiffalse
     ) do
       execute_lines(new_memory, program_counter + statement_length, input)
     else
-      new_memory
+
+      if(opcode.operation != :jumpiftrue and opcode.operation != :jumpiffalse) do
+        new_memory
+      else
+        case opcode.operation do
+          :jumpiftrue ->
+            first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1)) |> Integer.to_string
+            second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
+            IO.inspect(first_operand)
+            IO.inspect("^^^^")
+            if(first_operand != "0") do
+              IO.inspect(second_operand, label: "jumping because true to new pc")
+              execute_lines(new_memory, second_operand, input)
+            else
+              IO.inspect("not jumping because false")
+              execute_lines(new_memory, program_counter + statement_length, input)
+            end
+
+          :jumpiffalse ->
+            first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1)) |> Integer.to_string
+            second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
+
+            if(first_operand == "0") do
+              execute_lines(new_memory, second_operand, input)
+            else
+              execute_lines(new_memory, program_counter + statement_length, input)
+            end
+        end
+      end
     end
   end
 
@@ -119,6 +184,10 @@ defmodule Day5 do
       :multiply -> 4
       :input -> 2
       :output -> 2
+      :jumpiftrue -> 3
+      :jumpiffalse -> 3
+      :lessthan -> 4
+      :equals -> 4
       :exit -> 1
     end
   end
