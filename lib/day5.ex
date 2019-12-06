@@ -10,12 +10,17 @@ defmodule Day5 do
         4 -> :output
         99 -> :exit
       end
-    IO.inspect(op_modes, label: "modes")
+      
     op_mode_1 = String.at(op_modes, String.length(op_modes) - 1) |> parse_op_mode()
-    op_mode_2 = String.at(op_modes, String.length(op_modes) - 2) |> parse_op_mode()
-    op_mode_3 = String.at(op_modes, String.length(op_modes) - 3) |> parse_op_mode()
 
-    %{operation: operation, op_mode_1: op_mode_1, op_mode_2: op_mode_2, op_mode_3: op_mode_3}
+    op_mode_2 =
+      if(String.length(op_modes) > 1) do
+        String.at(op_modes, String.length(op_modes) - 2) |> parse_op_mode()
+      else
+        :position
+      end
+
+    %{operation: operation, op_mode_1: op_mode_1, op_mode_2: op_mode_2, op_mode_3: :position}
   end
 
   def parse_op_mode(bit) do
@@ -72,6 +77,7 @@ defmodule Day5 do
           IO.inspect(opcode.op_mode_2, label: "second opcode mode")
           IO.inspect(first_operand, label: "multiplying")
           IO.inspect(second_operand, label: "multiplying")
+
           List.replace_at(
             memory,
             load_address,
@@ -83,7 +89,8 @@ defmodule Day5 do
           List.replace_at(memory, load_address, input)
 
         :output ->
-          IO.inspect(Enum.at(statement, 1) |> String.to_integer(), label: "OUTPUT")
+          load_address = Enum.at(statement, 1) |> String.to_integer()
+          IO.inspect(Enum.at(memory, load_address) |> String.to_integer(), label: "OUTPUT")
           memory
 
         :exit ->
