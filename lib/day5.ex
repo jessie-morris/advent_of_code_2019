@@ -1,6 +1,5 @@
 defmodule Day5 do
   def parse_opcode(opcode) do
-    IO.inspect(opcode, label: "parsing op code:")
     {op_modes, operation_code} = String.split_at(opcode, -2)
 
     operation =
@@ -31,7 +30,6 @@ defmodule Day5 do
       :immediate -> op_value
       _ -> Enum.at(memory, String.to_integer(op_value))
     end
-    |> IO.inspect(label: "before exception")
     |> String.to_integer()
   end
 
@@ -47,23 +45,32 @@ defmodule Day5 do
   def execute_lines(memory, program_counter, input) do
     IO.inspect(program_counter, label: "starting execute lines at program counter")
     opcode = Enum.at(memory, program_counter) |> IO.inspect() |> parse_opcode
-    IO.inspect(opcode, label: "Got opcode: ")
     statement_length = get_statement_length(opcode.operation)
     statement = Enum.slice(memory, program_counter, statement_length)
 
     new_memory =
       case opcode.operation do
-        :add -> 
+        :add ->
           load_address = Enum.at(statement, 3) |> String.to_integer()
-          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement,1))
-          second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement,2))
-          List.replace_at(memory, load_address, first_operand + second_operand |> Integer.to_string()) 
+          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
+          second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
 
-        :multiply -> 
+          List.replace_at(
+            memory,
+            load_address,
+            (first_operand + second_operand) |> Integer.to_string()
+          )
+
+        :multiply ->
           load_address = Enum.at(statement, 3) |> String.to_integer()
-          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement,1))
-          second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement,2))
-          List.replace_at(memory, load_address, first_operand * second_operand |> Integer.to_string()) 
+          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
+          second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
+
+          List.replace_at(
+            memory,
+            load_address,
+            (first_operand * second_operand) |> Integer.to_string()
+          )
 
         :input ->
           load_address = Enum.at(statement, 1) |> String.to_integer()
@@ -72,7 +79,7 @@ defmodule Day5 do
         :output ->
           IO.inspect(Enum.at(statement, 1) |> String.to_integer(), label: "OUTPUT")
           memory
-          
+
         :exit ->
           IO.inspect(program_counter, label: "Exiting: Program counter at")
           memory
@@ -82,14 +89,16 @@ defmodule Day5 do
           IO.inspect(program_counter, label: "Program counter on raise")
           raise("this shouldnt have happened")
       end
-    IO.inspect(Enum.at(memory, program_counter), label: "whattus")
-    if(length(memory) >= program_counter + statement_length and Enum.at(memory, program_counter) != "99") do
+
+    if(
+      length(memory) >= program_counter + statement_length and
+        Enum.at(memory, program_counter) != "99"
+    ) do
       execute_lines(new_memory, program_counter + statement_length, input)
     else
       new_memory
     end
   end
-
 
   def get_statement_length(operation) do
     case operation do
