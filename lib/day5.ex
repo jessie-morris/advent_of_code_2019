@@ -1,7 +1,7 @@
 defmodule Day5 do
   def parse_opcode(opcode) do
     IO.inspect(opcode, label: "parsing op code:")
-    {op_modes, operation_code} =  String.split_at(opcode, -2)
+    {op_modes, operation_code} = String.split_at(opcode, -2)
 
     operation =
       case String.to_integer(operation_code) do
@@ -26,17 +26,26 @@ defmodule Day5 do
     end
   end
 
-  # def day5_part1() do
-  #   FileUtil.read_csv_file_to_int_array("day5.txt")
-  #   |> execute(1337)
-  # end
+  def get_operand_value(memory, op_mode, op_value) do
+    case op_mode do
+      :immediate -> op_value
+      _ -> Enum.at(memory, String.to_integer(op_value))
+    end
+    |> IO.inspect(label: "before exception")
+    |> String.to_integer()
+  end
+
+  def day5_part1() do
+    FileUtil.read_csv_file_to_str_array("day5.txt")
+    |> execute("1")
+  end
 
   def execute(program, input) do
     execute_lines(program, 0, input)
   end
 
   def execute_lines(memory, program_counter, input) do
-    IO.inspect(memory, label: "starting execute lines at program counter")
+    IO.inspect(program_counter, label: "starting execute lines at program counter")
     opcode = Enum.at(memory, program_counter) |> IO.inspect() |> parse_opcode
     IO.inspect(opcode, label: "Got opcode: ")
     statement_length = get_statement_length(opcode.operation)
@@ -44,17 +53,17 @@ defmodule Day5 do
 
     new_memory =
       case opcode.operation do
-        # 1 ->
-        #   first_operand = Enum.at(memory, Enum.at(statement, 1))
-        #   second_operand = Enum.at(memory, Enum.at(statement, 2))
-        #   load_address = Enum.at(statement, 3)
-        #   List.replace_at(memory, load_address, first_operand + second_operand)
+        :add -> 
+          load_address = Enum.at(statement, 3) |> String.to_integer()
+          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement,1))
+          second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement,2))
+          List.replace_at(memory, load_address, first_operand + second_operand |> Integer.to_string()) 
 
-        # 2 ->
-        #   first_operand = Enum.at(memory, Enum.at(statement, 1))
-        #   second_operand = Enum.at(memory, Enum.at(statement, 2))
-        #   load_address = Enum.at(statement, 3)
-        #   List.replace_at(memory, load_address, first_operand * second_operand)
+        :multiply -> 
+          load_address = Enum.at(statement, 3) |> String.to_integer()
+          first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement,1))
+          second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement,2))
+          List.replace_at(memory, load_address, first_operand * second_operand |> Integer.to_string()) 
 
         :input ->
           load_address = Enum.at(statement, 1) |> String.to_integer()
