@@ -10,7 +10,7 @@ defmodule Day5 do
         4 -> :output
         99 -> :exit
       end
-
+    IO.inspect(op_modes, label: "modes")
     op_mode_1 = String.at(op_modes, String.length(op_modes) - 1) |> parse_op_mode()
     op_mode_2 = String.at(op_modes, String.length(op_modes) - 2) |> parse_op_mode()
     op_mode_3 = String.at(op_modes, String.length(op_modes) - 3) |> parse_op_mode()
@@ -44,6 +44,9 @@ defmodule Day5 do
 
   def execute_lines(memory, program_counter, input) do
     IO.inspect(program_counter, label: "starting execute lines at program counter")
+    IO.inspect(Enum.at(memory, 224), label: "current value in cell 224")
+    IO.inspect(Enum.at(memory, 84), label: "current value in cell 84")
+    IO.inspect(memory, label: "current_memory")
     opcode = Enum.at(memory, program_counter) |> IO.inspect() |> parse_opcode
     statement_length = get_statement_length(opcode.operation)
     statement = Enum.slice(memory, program_counter, statement_length)
@@ -65,7 +68,10 @@ defmodule Day5 do
           load_address = Enum.at(statement, 3) |> String.to_integer()
           first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
           second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
-
+          IO.inspect(opcode.op_mode_1, label: "first opcode mode")
+          IO.inspect(opcode.op_mode_2, label: "second opcode mode")
+          IO.inspect(first_operand, label: "multiplying")
+          IO.inspect(second_operand, label: "multiplying")
           List.replace_at(
             memory,
             load_address,

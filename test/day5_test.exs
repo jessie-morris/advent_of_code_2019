@@ -25,6 +25,13 @@ defmodule Day5Test do
                op_mode_2: :position,
                op_mode_3: :position
              }
+
+      assert Day5.parse_opcode("102") == %{
+                operation: :multiply,
+                op_mode_1: :immediate,
+                op_mode_2: :position,
+                op_mode_3: :position
+      }
     end
   end
 
@@ -43,6 +50,6 @@ defmodule Day5Test do
   test "writes 2 to index 4, which then writes 4 to index 8, outputs x and exits" do
     assert Day5.execute(
              ["1101", "2", "0", "4", "99", "1", "1", "8", "99", "0", "99"],"1") == 
-             ["1101", "2", "0", "4", "2", "1", "1", "4", "4", "0", "99"]
+             ["1101", "2", "0", "4", "2", "1", "1", "8", "4", "0", "99"]
   end
 end
