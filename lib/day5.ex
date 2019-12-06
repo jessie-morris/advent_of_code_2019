@@ -57,9 +57,9 @@ defmodule Day5 do
   end
 
   def execute_lines(memory, program_counter, input) do
-    opcode = Enum.at(memory, program_counter) |> IO.inspect() |> parse_opcode
+    opcode = Enum.at(memory, program_counter) |> parse_opcode
     statement_length = get_statement_length(opcode.operation)
-    statement = Enum.slice(memory, program_counter, statement_length) |> IO.inspect()
+    statement = Enum.slice(memory, program_counter, statement_length) |> IO.inspect(label: "executing")
 
     new_memory =
       case opcode.operation do
@@ -117,11 +117,8 @@ defmodule Day5 do
           second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
 
           if(first_operand == second_operand) do
-            IO.inspect("first op == second op")
             List.replace_at(memory, load_address, "1")
           else
-            IO.inspect("first op != second op")
-            IO.inspect("writing 0 to #{load_address}")
             List.replace_at(memory, load_address, "0")
           end
         
@@ -129,7 +126,6 @@ defmodule Day5 do
         :jumpiffalse -> memory
 
         :exit ->
-          IO.inspect(program_counter, label: "Exiting: Program counter at")
           memory
 
         catch_all ->
@@ -154,13 +150,9 @@ defmodule Day5 do
           :jumpiftrue ->
             first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1)) |> Integer.to_string
             second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
-            IO.inspect(first_operand)
-            IO.inspect("^^^^")
             if(first_operand != "0") do
-              IO.inspect(second_operand, label: "jumping because true to new pc")
               execute_lines(new_memory, second_operand, input)
             else
-              IO.inspect("not jumping because false")
               execute_lines(new_memory, program_counter + statement_length, input)
             end
 
