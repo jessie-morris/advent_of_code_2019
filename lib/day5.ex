@@ -50,7 +50,7 @@ defmodule Day5 do
   def day5_part2() do
     FileUtil.read_csv_file_to_str_array("day5.txt")
     |> execute("5")
-  end 
+  end
 
   def execute(program, input) do
     execute_lines(program, 0, input)
@@ -59,7 +59,9 @@ defmodule Day5 do
   def execute_lines(memory, program_counter, input) do
     opcode = Enum.at(memory, program_counter) |> parse_opcode
     statement_length = get_statement_length(opcode.operation)
-    statement = Enum.slice(memory, program_counter, statement_length) |> IO.inspect(label: "executing")
+
+    statement =
+      Enum.slice(memory, program_counter, statement_length) |> IO.inspect(label: "executing")
 
     new_memory =
       case opcode.operation do
@@ -91,6 +93,7 @@ defmodule Day5 do
 
         :output ->
           first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
+
           if(opcode.op_mode_1 == :position) do
             load_address = Enum.at(statement, 1) |> String.to_integer()
             IO.inspect(Enum.at(memory, load_address) |> String.to_integer(), label: "OUTPUT")
@@ -99,7 +102,7 @@ defmodule Day5 do
             IO.inspect(first_operand, label: "OUTPUT")
             memory
           end
-          
+
         :lessthan ->
           load_address = Enum.at(statement, 3) |> String.to_integer()
           first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
@@ -121,9 +124,12 @@ defmodule Day5 do
           else
             List.replace_at(memory, load_address, "0")
           end
-        
-        :jumpiftrue -> memory
-        :jumpiffalse -> memory
+
+        :jumpiftrue ->
+          memory
+
+        :jumpiffalse ->
+          memory
 
         :exit ->
           memory
@@ -142,14 +148,17 @@ defmodule Day5 do
     ) do
       execute_lines(new_memory, program_counter + statement_length, input)
     else
-
       if(opcode.operation != :jumpiftrue and opcode.operation != :jumpiffalse) do
         new_memory
       else
         case opcode.operation do
           :jumpiftrue ->
-            first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1)) |> Integer.to_string
+            first_operand =
+              get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
+              |> Integer.to_string()
+
             second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
+
             if(first_operand != "0") do
               execute_lines(new_memory, second_operand, input)
             else
@@ -157,7 +166,10 @@ defmodule Day5 do
             end
 
           :jumpiffalse ->
-            first_operand = get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1)) |> Integer.to_string
+            first_operand =
+              get_operand_value(memory, opcode.op_mode_1, Enum.at(statement, 1))
+              |> Integer.to_string()
+
             second_operand = get_operand_value(memory, opcode.op_mode_2, Enum.at(statement, 2))
 
             if(first_operand == "0") do

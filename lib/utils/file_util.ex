@@ -19,4 +19,9 @@ defmodule FileUtil do
     |> Enum.map(&String.trim(&1))
     |> Enum.map(&String.split(&1, ","))
   end
+
+  def get_lines(file_path) do
+    File.stream!(file_path)
+    |> Enum.map(&String.trim/1)
+  end
 end
