@@ -30,20 +30,42 @@ defmodule Day6Test do
   end
 
   describe "part 2 stuff" do
+    test "makes a nice hierarchical map" do
+      assert Day6.orbit_map_redux(%{
+               "B" => ["G", "C"],
+               "C" => ["D"],
+               "COM" => ["B", "R", "S"],
+               "D" => ["E"],
+               "E" => ["F"],
+               "G" => ["H"],
+               "R" => ["YOU"],
+               "S" => ["SAN"]
+             }) ==
+               %{
+                 "COM" => %{
+                   "B" => %{"G" => %{"H" => %{}}, "C" => %{"D" => %{"E" => %{"F" => %{}}}}},
+                   "R" => %{"YOU" => %{}},
+                   "S" => %{"SAN" => %{}}
+                 }
+               }
+    end
+
     test "see orbital map for example" do
-      assert Day6.transfers_to_santa(["COM)B",
-      "B)C",
-      "C)D",
-      "D)E",
-      "E)F",
-      "B)G",
-      "G)H",
-      "D)I",
-      "E)J",
-      "J)K",
-      "K)L",
-      "K)YOU",
-      "I)SAN"]) == 4
+      assert Day6.transfers_to_santa([
+               "COM)B",
+               "B)C",
+               "C)D",
+               "D)E",
+               "E)F",
+               "B)G",
+               "G)H",
+               "D)I",
+               "E)J",
+               "J)K",
+               "K)L",
+               "K)YOU",
+               "I)SAN"
+             ]) == 4
     end
   end
 end
