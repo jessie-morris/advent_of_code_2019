@@ -26,13 +26,13 @@ defmodule Day8 do
     base = make_base(length(List.first(layers)))
 
     layers_redux =
-      Enum.reduce(layers, base, fn layer, acc1 ->
+      Enum.reduce(layers, base, fn layer, full_picture_acc ->
         Enum.with_index(layer)
-        |> Enum.reduce(acc1, fn {v, i}, acc ->
-          if(Enum.at(acc, i) == "2" && v != "2") do
-            List.replace_at(acc, i, v)
+        |> Enum.reduce(full_picture_acc, fn {v, i}, layer_acc ->
+          if(Enum.at(layer_acc, i) == "2" && v != "2") do
+            List.replace_at(layer_acc, i, v)
           else
-            acc
+            layer_acc
           end
         end)
       end)
